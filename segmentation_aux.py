@@ -16,7 +16,15 @@ class SegmentOrderer( Processor ):
         order= mlw*(s[:,1]/mlh)+s[:,0]
         sort_order= numpy.argsort( order )
         return segments[ sort_order ]
-        
+
+class SegmentOrdererFromLines( Processor ):
+    def _process( self, segments ):
+        if not hasattr(self, "lines_middles"):
+            raise Exception("This orderer needs the lines middles attribute obtained somewhere else")
+        segment_lines= guess_segments_lines( segments, self.lines_middles)
+        segment_lines*=1000000
+        segment_lines+= segments[:,0]
+        return segments[ numpy.argsort(segment_lines) ]
 
 class LineFinder( DisplayingProcessor ):
     @staticmethod
@@ -119,7 +127,7 @@ class LineFinder( DisplayingProcessor ):
 
 
 
-def guess_segments_lines( segments, lines, nearline_tolerance=5.0 ):
+def guess_segments_lines( segments, lines, nearline_tolerance=999.0 ):
     '''given segments, outputs a array of line numbers, or -1 if it 
     doesn't belong to any'''
     ys= segments[:,1]

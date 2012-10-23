@@ -1,7 +1,7 @@
 from opencv_utils import show_image_and_wait_for_key, draw_segments, BlurProcessor
 from processor import DisplayingProcessor, DisplayingProcessorStack, create_broadcast
-from segmentation_aux import SegmentOrderer
-from segmentation_filters import create_default_filter_stack, Filter, NearLineFilter
+from segmentation_aux import SegmentOrdererFromLines
+from segmentation_filters import create_default_filter_stack, Filter, LINEFINDER_POSITION
 import numpy
 import cv2
 
@@ -66,7 +66,8 @@ class RawContourSegmenter( RawSegmenter ):
 class ContourSegmenter( FullSegmenter ):
     def __init__(self, **args):
         filters= create_default_filter_stack()
-        stack = [BlurProcessor(), RawContourSegmenter()] + filters + [SegmentOrderer()]
+        stack = [BlurProcessor(), RawContourSegmenter()] + filters + [SegmentOrdererFromLines()]
         FullSegmenter.__init__(self, stack, **args)
         stack[0].add_prehook( create_broadcast( "_input", filters, "image" ) )
+        filters[LINEFINDER_POSITION].add_poshook( create_broadcast( "lines_middles", stack[-1] ) )
 

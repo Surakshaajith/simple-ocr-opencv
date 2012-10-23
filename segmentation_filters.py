@@ -4,9 +4,10 @@ from processor import DisplayingProcessor, create_broadcast
 import numpy
 
 
+LINEFINDER_POSITION=4
 def create_default_filter_stack():
     stack= [LargeFilter(), SmallFilter(), LargeAreaFilter(), ContainedFilter(), LineFinder(), NearLineFilter()]
-    stack[4].add_poshook( create_broadcast( "lines_topmiddlebottoms", stack[5] ) )
+    stack[LINEFINDER_POSITION].add_poshook( create_broadcast( "lines_topmiddlebottoms", stack[5] ) )
     return stack
 
 
