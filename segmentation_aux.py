@@ -20,39 +20,74 @@ class SegmentOrderer( Processor ):
 
 class LineFinder( DisplayingProcessor ):
     @staticmethod
-    def _guess_lines( ys, max_lines=50, confidence_minimum=0.0 ):
+    def _guess_lines( ys, max_lines=50, confidence_minimum=5 ):
         '''guesses and returns text inter-line distance, number of lines, y_position of first line'''
-        ys= ys.astype( numpy.float32 )
-        compactness_list, means_list, diffs, deviations= [], [], [], []
-        start_n= 1
-        for k in range(start_n,max_lines):
-            compactness, classified_points, means = cv2.kmeans( data=ys, K=k, bestLabels=None, criteria=(cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_MAX_ITER, 1, 10), attempts=2, flags=cv2.KMEANS_PP_CENTERS)
-            means=numpy.sort(means, axis=0)
-            means_list.append( means )
-            compactness_list.append( compactness )
-            if k<3:
-                tmp1= [1,2,500, 550] #forge data for bad clusters
+        def dunn_index(centroids, points, belongings):
+            if points.shape[1]==1: #1D
+                def intra_cluster_distance( c, points ):
+                    return numpy.average( numpy.abs(c-points))
+                def inter_cluster_distance( c1, c2):
+                    return numpy.sqrt(numpy.sum((c1-c2)**2))
             else:
-                #calculate the center of each cluster. Assuming lines are equally spaced...
-                tmp1=numpy.diff(means, axis=0) #diff will be equal or very similar
-            tmp2= numpy.std(tmp1)/numpy.mean(means) #so variance is minimal
-            tmp3= numpy.sum( (tmp1-numpy.mean(tmp1))**2) #root mean square deviation, more sensitive than std
-            diffs.append(tmp1)
-            deviations.append(tmp3)
+                def intra_cluster_distance( c, points ):
+                    return numpy.average( numpy.sqrt(numpy.sum((c-points)**2, axis=1)))
+                def inter_cluster_distance( c1, c2):
+                    return numpy.sqrt(numpy.sum(numpy.abs(c1-c2)**2))
+            n= len(centroids)
+            max_intra_distance= max( [ intra_cluster_distance(centroids[i], points[belongings==i]) for i in range(n)] )
+            tmp= []
+            for i in range(n):
+                for j in [x for x in range(i+1,n) if x!=i]:
+                    tmp.append( inter_cluster_distance( centroids[i], centroids[j] )  )
+            return min(tmp) / max_intra_distance
+        def equalspacing_index( centroids ):
+            '''assumes centroids should be equally spaced'''
+            spacing= numpy.diff(centroids) 
+            return numpy.sum( (spacing-numpy.mean(spacing))**2) #root mean square deviation, more sensitive than std
+
+        ys= ys.astype( numpy.float32 )
+        assert len(ys.shape)==1
+        ys= ys.reshape(len(ys),1)
         
-        compactness_list= numpy.diff(numpy.log( numpy.array(compactness_list)+0.01 )) #sum small amount to avoid log(0)
-        deviations= numpy.array( deviations[1:] )
-        deviations[0]= numpy.mean( deviations[1:] )
-        compactness_list= (compactness_list-numpy.mean(compactness_list))/numpy.std(compactness_list)
-        deviations= (deviations-numpy.mean(deviations))/numpy.std(deviations)
-        aglomerated_metric= 0.1*compactness_list + 0.9*deviations
+        means_list=[]
+        compactness_indexes, equalspacing_indexes, dunn_indexes= [], [], []
+        start_n= 3
+        for k in range(start_n,max_lines):
+            compactness, belongings, means = cv2.kmeans( data=ys, K=k, bestLabels=None, criteria=(cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_MAX_ITER, 1, 10), attempts=2, flags=cv2.KMEANS_PP_CENTERS)
+            means_list.append( means.reshape(-1) )
+            if k>=3:
+                equalspacing_indexes.append( equalspacing_index( numpy.sort(means.reshape(-1)) ) )
+            compactness_indexes.append( compactness )
+            dunn_indexes.append( dunn_index( means, ys, belongings.reshape(-1) ) )
+        equalspacing_indexes= [max(equalspacing_indexes)]*(3-start_n)+equalspacing_indexes #fill impossible to calculate positions
         
-        i= numpy.argmin(aglomerated_metric)+1
-        lines= means_list[i]
+        #perform mangling in order to assemble a meaningful composite metric
+        compactness_indexes=    numpy.log( numpy.array(compactness_indexes)+0.01 ) #sum small amount to avoid log(0)
+        compactness_indexes=    numpy.diff( compactness_indexes )
+        compactness_indexes=    numpy.append(compactness_indexes[0], compactness_indexes)
+        dunn_indexes=           -numpy.array( dunn_indexes )
+        equalspacing_indexes=   numpy.array( equalspacing_indexes )
+        for indexes in (compactness_indexes, equalspacing_indexes, dunn_indexes):
+            indexes-=numpy.mean(indexes)    #center on 0
+            indexes/=numpy.std(indexes)     #normalize
+        aglomerated_metric= 0.1*compactness_indexes + 0.3*equalspacing_indexes + 0.6*dunn_indexes
+        
+        i= numpy.argmin(aglomerated_metric)
+        lines= numpy.sort( means_list[i] )
         
         #calculate confidence
         betterness= numpy.sort(aglomerated_metric, axis=0)
         confidence= ( betterness[1] - betterness[0]) / ( betterness[2] - betterness[1])
+
+        '''
+        from pylab import plot, show
+        plot(compactness_indexes,   'r')
+        plot(equalspacing_indexes,  'g')
+        plot(dunn_indexes,          'b')
+        plot(aglomerated_metric,    'y')
+        show()
+        '''
+        
         if confidence<confidence_minimum:
             raise Exception("low confidence")
         return lines #still floating points
@@ -64,11 +99,14 @@ class LineFinder( DisplayingProcessor ):
         bottoms=            self._guess_lines( segment_bottoms )
         if len(tops)!=len(bottoms):
             raise Exception("different number of lines")
-        middles=                    (tops+bottoms)/2
+        middles=                    (tops+bottoms)/2            #middle of the line
+        inter=                      (tops[1:]+bottoms[:-1])/2   #between lines
         topbottoms=                 numpy.sort( numpy.append( tops, bottoms ) )
         topmiddlebottoms=           numpy.sort( reduce(numpy.append, ( tops, middles, bottoms )) )
         self.lines_tops=             tops
         self.lines_bottoms=          bottoms
+        self.lines_middles=          middles
+        self.lines_inter=            inter
         self.lines_topbottoms=       topbottoms
         self.lines_topmiddlebottoms= topmiddlebottoms
         return segments
@@ -78,7 +116,8 @@ class LineFinder( DisplayingProcessor ):
         draw_lines( copy, self.lines_tops,    (0,0,255) )
         draw_lines( copy, self.lines_bottoms, (0,255,0) )
         show_image_and_wait_for_key( copy, "line starts and ends")
-        
+
+
 
 def guess_segments_lines( segments, lines, nearline_tolerance=5.0 ):
     '''given segments, outputs a array of line numbers, or -1 if it 
