@@ -1,6 +1,6 @@
 from opencv_utils import show_image_and_wait_for_key, draw_segments, BlurProcessor
 from processor import DisplayingProcessor, DisplayingProcessorStack, create_broadcast
-from segmentation_aux import SegmentOrdererFromLines
+from segmentation_aux import SegmentOrdererFromLines, region_from_segment
 from segmentation_filters import create_default_filter_stack, Filter, LINEFINDER_POSITION
 import numpy
 import cv2
@@ -20,11 +20,6 @@ def segments_to_numpy( segments ):
     segments= numpy.array( segments, dtype=SEGMENT_DATATYPE, ndmin=2)   #each segment in a row
     segments= segments if SEGMENTS_DIRECTION==0 else numpy.transpose(segments)
     return segments
-
-def region_from_segment( image, segment ):
-    '''given a segment (rectangle) and an image, returns it's corresponding subimage'''
-    x,y,w,h= segment
-    return image[y:y+h,x:x+w]
 
 
 class RawSegmenter( DisplayingProcessor ):

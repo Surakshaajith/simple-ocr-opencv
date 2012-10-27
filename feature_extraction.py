@@ -1,6 +1,6 @@
 import numpy
 import cv2
-from segmentation import region_from_segment
+from segmentation_aux import region_from_segment
 from opencv_utils import background_color
 
 FEATURE_DATATYPE=   numpy.float32

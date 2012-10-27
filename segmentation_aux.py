@@ -27,6 +27,11 @@ class SegmentOrdererFromLines( Processor ):
         segment_lines+= segments[:,0]
         return segments[ numpy.argsort(segment_lines) ]
 
+def region_from_segment( image, segment ):
+    '''given a segment (rectangle) and an image, returns it's corresponding subimage'''
+    x,y,w,h= segment
+    return image[y:y+h,x:x+w]
+
 class LineFinder( DisplayingProcessor ):
     @staticmethod
     def _guess_lines( ys, min_lines=3, max_lines=50):
