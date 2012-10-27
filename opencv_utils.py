@@ -57,6 +57,13 @@ class BlurProcessor( ImageProcessor ):
             image = cv2.GaussianBlur(image,(x,y),0)
         return image
 
+class ResizeProcessor( ImageProcessor ):
+    PARAMETERS= ImageProcessor.PARAMETERS + { "ratio": 0.0, "ratio_x": 1.0, "ratio_y": 1.0 }
+    def _image_processing( self, image ):
+        if self.ratio!=0:
+            self.ratio_x, self.ratio_y= self.ratio, self.ratio
+        return cv2.resize(image,(int(image.shape[1]*self.ratio_x), int(image.shape[0]*self.ratio_y)))
+
 def ask_for_key( return_arrow_keys=True ):
     key=128
     while key > 127:
