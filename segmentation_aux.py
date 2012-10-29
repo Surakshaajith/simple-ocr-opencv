@@ -1,5 +1,5 @@
 from processor import Processor, DisplayingProcessor
-from opencv_utils import draw_lines, show_image_and_wait_for_key
+from opencv_utils import draw_lines, show_image_and_wait_for_key, draw_segments
 import clustering
 import numpy
 import cv2
@@ -31,6 +31,40 @@ def region_from_segment( image, segment ):
     '''given a segment (rectangle) and an image, returns it's corresponding subimage'''
     x,y,w,h= segment
     return image[y:y+h,x:x+w]
+
+class SegmentSplitter( DisplayingProcessor ):
+    PARAMETERS= DisplayingProcessor.PARAMETERS+ {'splitter_max_char_width':15}
+    '''splits segments that have more than one character'''
+    def _process( self, segments):
+        assert hasattr(self, 'image') #must be set from the outside
+        image= self.image.astype( numpy.float )
+        new_segments= []
+        self.changed=[]
+        for segment in segments:
+            if segment[2] <= self.splitter_max_char_width:
+                new_segments.append(segment)
+            else:
+                region= region_from_segment( image, segment )
+                vertical_histogram= numpy.mean( region, axis=1).reshape(-1)
+                #thresolded= vertical_histogram!=0
+                #n_regions= (vertical_histogram[0]!=0) + (numpy.sum( numpy.diff(thresolded) ) / 2)
+                #split_point= numpy.argmin(vertical_histogram)
+                split_point= segment[2] / 2 #hack
+                new_segments.append( (segment[0], segment[1], split_point, segment[3]) )
+                new_segments.append( (segment[0]+split_point, segment[1], segment[2]-split_point, segment[3]) )   
+                self.changed.append( segment )  
+        from segmentation import segments_to_numpy
+        self.changed= segments_to_numpy( self.changed )
+        new_segments= segments_to_numpy( new_segments )
+        return new_segments
+
+    def display( self, display_before=False):
+        '''shows the effect of this filter'''
+        copy= self.image.copy()
+        draw_segments( copy, self._output, (0,255,0) )
+        draw_segments( copy, self.changed, (0,0,255) )
+        show_image_and_wait_for_key( copy, "segments filtered by "+self.__class__.__name__)
+
 
 class LineFinder( DisplayingProcessor ):
     @staticmethod
