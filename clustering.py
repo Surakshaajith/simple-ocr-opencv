@@ -42,6 +42,7 @@ def dunn_index(points, centroids, belongings):
             tmp.append( inter_cluster_distance( centroids[i], centroids[j] )  )
     if not len(tmp): #only one cluster
         tmp=[1] #ugly ugly hack!
+    max_intra_distance+=1e-10   # divide by zero
     return min(tmp) / max_intra_distance
 
 def even_distribution_index(points, centroids, belongings):
