@@ -93,8 +93,8 @@ class Processor( object ):
 class DisplayingProcessor( Processor ):
     def display(self, display_before=False):
         '''Show the last effect this processor had - on a GUI, for 
-        example. If show_before is True, show the "state before 
-        processor" before'''
+        example. If show_before is True, also shows the state before 
+        the processor was applied"'''
         raise NotImplementedError
 
 class ProcessorStack( Processor ):

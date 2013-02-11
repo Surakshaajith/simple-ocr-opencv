@@ -68,19 +68,17 @@ class SegmentSplitter( DisplayingProcessor ):
 
 class LineFinder( DisplayingProcessor ):
     @staticmethod
-    def _guess_lines( ys, min_lines=3, max_lines=50):
-        '''guesses and returns text inter-line distance, number of lines, y_position of first line'''
-        centroids, belongings = clustering.kmeans( ys, min_lines, max_lines )
-        dunn_indexes= numpy.array([ clustering.dunn_index( ys, c, b ) for c,b in zip(centroids, belongings) ])
-        evdi_indexes= numpy.array([ clustering.even_distribution_index( ys, c, b ) for c,b in zip(centroids, belongings) ])
-        #perform mangling in order to assemble a meaningful composite metric
-        for indexes in (dunn_indexes, evdi_indexes):
-            indexes-=numpy.mean(indexes)    #center on 0
-            indexes/=numpy.std(indexes)     #normalize
-        aglomerated_metric= 0.35*evdi_indexes + 0.65*dunn_indexes
-        i= numpy.argmax(aglomerated_metric)
-        lines= numpy.sort( centroids[i].reshape(-1) )
-        return lines #still floating points   
+    def _guess_lines( ys, tops=True ):
+        '''guesses and returns lines vertical coordinates'''
+        ys= ys.reshape(-1)
+        s=numpy.sort(ys)
+        d= numpy.diff(s)
+        _,belongings,centroids= clustering.kmeans_single(d.reshape(-1,1), 2)
+        line_changes= (belongings==numpy.argmax(centroids)).reshape(-1)
+        line_changes= numpy.insert( line_changes, 0, True )
+        line_numbers= numpy.cumsum(line_changes.astype(int))-1
+        line_coordinates= s[line_changes]
+        return line_coordinates
     
     def _process( self, segments ):
         segment_tops=       segments[:,1].reshape( (-1,1) )
@@ -88,7 +86,7 @@ class LineFinder( DisplayingProcessor ):
         tops=               self._guess_lines( segment_tops )
         bottoms=            self._guess_lines( segment_bottoms )
         if len(tops)!=len(bottoms):
-            raise Exception("different number of lines")
+            raise Exception("different number of lines:" +str(len(tops))+" "+str(len(bottoms)))
         middles=                    (tops+bottoms)/2            #middle of the line
         inter=                      (tops[1:]+bottoms[:-1])/2   #between lines
         topbottoms=                 numpy.sort( numpy.append( tops, bottoms ) )
