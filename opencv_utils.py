@@ -1,5 +1,5 @@
 from numpy_utils import OverflowPreventer
-from processor import DisplayingProcessor, ProcessorStack
+from processor import DisplayingProcessor
 import numpy
 import cv2
 

@@ -5,10 +5,10 @@ import numpy
 
 
 LINEFINDER_POSITION=4
-def create_default_filter_stack():
-    stack= [LargeFilter(), SmallFilter(), LargeAreaFilter(), ContainedFilter(), LineFinder(), NearLineFilter()]
-    stack[LINEFINDER_POSITION].add_poshook( create_broadcast( "lines_topmiddlebottoms", stack[5] ) )
-    return stack
+def create_default_filter_pipeline():
+    pipeline= [LargeFilter(), SmallFilter(), LargeAreaFilter(), ContainedFilter(), LineFinder(), NearLineFilter()]
+    pipeline[LINEFINDER_POSITION].add_poshook( create_broadcast( "lines_topmiddlebottoms", pipeline[5] ) )
+    return pipeline
 
 
 class Filter( DisplayingProcessor ):

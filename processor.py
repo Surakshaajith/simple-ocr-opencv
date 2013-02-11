@@ -97,13 +97,13 @@ class DisplayingProcessor( Processor ):
         the processor was applied"'''
         raise NotImplementedError
 
-class ProcessorStack( Processor ):
-    '''a stack of processors. Each processor's output is fed to the next'''
+class Pipeline( Processor ):
+    '''a pipeline of processors. Each processor's output is fed to the next'''
     def __init__(self, processor_instances=[], **args):
-        self.set_processor_stack( processor_instances )
+        self.set_processor_pipeline( processor_instances )
         Processor.__init__(self, **args)
 
-    def set_processor_stack( self, processor_instances ):
+    def set_processor_pipeline( self, processor_instances ):
         assert all( isinstance(x, Processor) for x in processor_instances )
         self.processors= processor_instances
 
@@ -131,7 +131,7 @@ class ProcessorStack( Processor ):
             arguments= p.process( arguments )
         return arguments
 
-class DisplayingProcessorStack( ProcessorStack ):
+class DisplayingPipeline( Pipeline ):
     def display(self, display_before=False):
         if display_before:
             pr= self.processors[1:]

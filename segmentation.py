@@ -1,7 +1,7 @@
 from opencv_utils import show_image_and_wait_for_key, draw_segments, BlurProcessor
-from processor import DisplayingProcessor, DisplayingProcessorStack, create_broadcast
+from processor import DisplayingProcessor, DisplayingPipeline, create_broadcast
 from segmentation_aux import SegmentOrdererFromLines, region_from_segment
-from segmentation_filters import create_default_filter_stack, Filter, LINEFINDER_POSITION
+from segmentation_filters import create_default_filter_pipeline, Filter, LINEFINDER_POSITION
 import numpy
 import cv2
 
@@ -34,7 +34,7 @@ class RawSegmenter( DisplayingProcessor ):
         self.image, self.segments= image, segments
         return segments
 
-class FullSegmenter( DisplayingProcessorStack ):
+class FullSegmenter( DisplayingPipeline ):
     pass
 
 class RawContourSegmenter( RawSegmenter ):
@@ -60,9 +60,9 @@ class RawContourSegmenter( RawSegmenter ):
 
 class ContourSegmenter( FullSegmenter ):
     def __init__(self, **args):
-        filters= create_default_filter_stack()
-        stack = [BlurProcessor(), RawContourSegmenter()] + filters + [SegmentOrdererFromLines()]
-        FullSegmenter.__init__(self, stack, **args)
-        stack[0].add_prehook( create_broadcast( "_input", filters, "image" ) )
-        filters[LINEFINDER_POSITION].add_poshook( create_broadcast( "lines_middles", stack[-1] ) )
+        filters= create_default_filter_pipeline()
+        pipeline = [BlurProcessor(), RawContourSegmenter()] + filters + [SegmentOrdererFromLines()]
+        FullSegmenter.__init__(self, pipeline, **args)
+        pipeline[0].add_prehook( create_broadcast( "_input", filters, "image" ) )
+        filters[LINEFINDER_POSITION].add_poshook( create_broadcast( "lines_middles", pipeline[-1] ) )
 
