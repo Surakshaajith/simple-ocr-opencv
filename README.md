@@ -6,8 +6,8 @@ http://stackoverflow.com/questions/9413216/simple-digit-recognition-ocr-in-openc
 How to use
 ==========
 
-1. Make grounding. Example: `example_grounding.py`
-2. Do training and classification. Example: `example.py`
+1. Make grounding: `example_grounding.py`
+2. Do training and classification: `example.py`
 3. Make grounding for a CAPTCHA: `example_captcha_grounding.py`
 4. Try to get other image files grounded, trained, and classified.
 
