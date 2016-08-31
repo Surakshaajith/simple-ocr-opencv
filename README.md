@@ -20,7 +20,7 @@ What the output for one character looks like:
 What it means:
 "A possible character was found at pixel 50x18, with pixel dimensions 14x15"
 
-#### Step 3: Classification via Supervised Learning
+#### Step 3: Supervised Learning
 
 "Teaches" the software which chunks of the image correspond to which characters.
 
