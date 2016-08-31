@@ -16,24 +16,15 @@ How it works
 
 #### Step 1: Load an image
 
-An image similar to other images you'd like to be able to OCR.
-Chop it up and/or change the colors in it if necessary.
+An image similar to other images you'd like to be able to OCR. Chop it up and/or change the colors in it if necessary.
 
 #### Step 2: Segmentation
 
-Finds chunks of pixels that look like text characters.
-
-What it looks like:
-"50 18 14 15"
-
-What it means:
-"Found a character at pixel 50x18, with pixel dimensions 14x15"
+Finds chunks of pixels that look like text characters. What it looks like: "50 18 14 15." What it means: "Found a character at pixel 50x18, with pixel dimensions 14x15"
 
 #### Step 3: Supervised Learning
 
-"Teaches" the software which segments of the image correspond to which characters.
-
-This project does this with k-nearest neighbor. One of the simplest classification algorithms.
+"Teaches" the software which segments of the image correspond to which characters. This project does this with k-nearest neighbor. One of the simplest classification algorithms.
 
 #### Step 4: Grounding
 
