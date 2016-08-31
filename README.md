@@ -32,7 +32,7 @@ What it means:
 
 "Teaches" the software which chunks of the image correspond to which characters.
 
-This project does this with k-nearest neighbor. One of the simplest classification algorithms in order to classify what particular segments of the image correspond to which characters.
+This project does this with k-nearest neighbor. One of the simplest classification algorithms.
 
 #### Step 4: Grounding
 
@@ -44,7 +44,7 @@ Teaches the software "if you see more segments that look like these ones, this i
 
 #### Step 6: Classification
 
-Compares the contents of a new image to training data collected from similar images.
+Looks at the training data (.box files for previously grounded and trained images) in order to classify the contents of a new image.
 
 How to understand this project
 ==============================
