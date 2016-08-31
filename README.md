@@ -40,7 +40,7 @@ Creates a ".box" file which defines which segments of the image correspond to wh
 
 #### Step 5: Training
 
-Teaches the software "if you see more segments that look like this, this is what they mean"
+Teaches the software "if you see more segments that look like these ones, this is what they mean"
 
 #### Step 6: Classification
 
