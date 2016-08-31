@@ -17,26 +17,27 @@ How it works
 #### Step 1: Load an image
 
 An image similar to other images you'd like to be able to OCR.
+Chop it up and/or change the colors in it if necessary.
 
 #### Step 2: Segmentation
 
-Finds chunks of pixels that look like text.
+Finds chunks of pixels that look like text characters.
 
-What the output for one character looks like:
+What it looks like:
 "50 18 14 15"
 
 What it means:
-"A possible character was found at pixel 50x18, with pixel dimensions 14x15"
+"Found a character at pixel 50x18, with pixel dimensions 14x15"
 
 #### Step 3: Supervised Learning
 
-"Teaches" the software which chunks of the image correspond to which characters.
+"Teaches" the software which segments of the image correspond to which characters.
 
 This project does this with k-nearest neighbor. One of the simplest classification algorithms.
 
 #### Step 4: Grounding
 
-Creates a ".box" file which defines which segments of the image correspond to which characters.
+Creates a ".box" file which defines the results of the previous steps.
 
 #### Step 5: Training
 
@@ -44,11 +45,11 @@ Teaches the software "if you see more segments that look like these ones, this i
 
 #### Step 6: Classification
 
-Looks at the training data (.box files for previously grounded and trained images) in order to classify the contents of a new image.
+Uses the pixels-to-characters mappings defined in previous steps to classify what new characters are.
 
 #### Step 7: Results
 
-If everything went well then you've got an output that says what's written in the image. If not, try using different images.
+If it worked well, you've got an accurate output that says what text is in the image.
 
 How to understand this project
 ==============================
