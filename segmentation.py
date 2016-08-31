@@ -65,7 +65,7 @@ class RawContourSegmenter( RawSegmenter ):
 
 class ContourSegmenter( FullSegmenter ):
     def __init__(self, **args):
-        if (args['filters']):
+        if ('filters' in args):
             filters = args['filters']
         else:
             filters= create_default_filter_stack()
