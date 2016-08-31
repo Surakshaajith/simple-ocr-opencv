@@ -44,7 +44,7 @@ Teaches the software "if you see more segments that look like these ones, this i
 
 #### Step 6: Classification
 
-Compares a new image to the trained examples of similar images in order to try to figure out what text is in the image.
+Compares the contents of a new image to training data collected from similar images.
 
 How to understand this project
 ==============================
