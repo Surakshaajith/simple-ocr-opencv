@@ -46,7 +46,7 @@ Teaches the software "if you see more segments that look like these ones, this i
 
 Looks at the training data (.box files for previously grounded and trained images) in order to classify the contents of a new image.
 
-#### Step 6: Results
+#### Step 7: Results
 
 If everything went well then you've got an output that says what's written in the image. If not, try using different images.
 
