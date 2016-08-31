@@ -36,7 +36,7 @@ This project does this with k-nearest neighbor. One of the simplest classificati
 
 #### Step 4: Grounding
 
-Creates a ".box" file which defines which characters are where and what size they are within a particular image.
+Creates a ".box" file which defines which chunks of the image correspond to which characters.
 
 #### Step 5: Training
 
