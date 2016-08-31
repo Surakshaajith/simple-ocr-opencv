@@ -16,7 +16,7 @@ How it works
 
 #### Step 1: Load an image
 
-An image similar to other images you'd like to be able to OCR. Chop it up and/or change the colors in it if necessary. Often, the simpler the image, the easier it'll be to OCR it.
+An image similar to other images you'd like to be able to OCR. Chop it up and/or change the colors in it if necessary. Generally, the less the text looks like the text you're looking at right now, the harder it'll be to process it.
 
 #### Step 2: Segmentation
 
