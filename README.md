@@ -3,6 +3,15 @@ A simple pythonic OCR engine using opencv and numpy.
 Originally inspired by
 http://stackoverflow.com/questions/9413216/simple-digit-recognition-ocr-in-opencv-python
 
+How to use
+==========
+
+1. Make grounding with `example_grounding.py`
+2. Do training and classification with `example.py`
+3. Make grounding for a CAPTCHA with `example_captcha_grounding.py`
+
+You can use your own images, by placing them on the `data` directory.
+
 How it works
 ==================
 
@@ -48,13 +57,3 @@ docstrings, so that's probably a good way to start.
 
 If you need any help, don't hesitate to contact me. You can find my 
 email on my github profile.
-
-
-How to use
-==========
-
-1. Make grounding with `example_grounding.py`
-2. Do training and classification with `example.py`
-3. Make grounding for a CAPTCHA with `example_captcha_grounding.py`
-
-You can use your own images, by placing them on the `data` directory.
