@@ -3,41 +3,40 @@ A simple pythonic OCR engine using opencv and numpy.
 Originally inspired by
 http://stackoverflow.com/questions/9413216/simple-digit-recognition-ocr-in-opencv-python
 
-Essential Concepts
+How it works
 ==================
 
-#### Segmentation
+#### Step 1: Load an image
 
-In order for OCR to be performed on a image, several steps must be 
-performed on the source image. Segmentation is the process of 
-identifying the regions of the image that represent characters. 
+An image similar to other images you'd like to be able to OCR.
 
-This project uses rectangles to model segments. 
+#### Step 2: Segmentation
 
-#### Supervised learning with a classification problem
+Finds chunks of pixels that look like text.
 
-The [classification problem][] consists in identifying to which class a 
-observation belongs to (i.e.: which particular character is contained 
-in a segment).
+What the output for one character looks like:
+"50 18 14 15"
 
-[Supervised learning][] is a way of "teaching" a machine. Basically, an 
-algorithm is *trained* through *examples* (i.e.: this particular 
-segment contains the character `f`). After training, the machine 
-should be able to apply its aquired knowledge to new data.
+What it means:
+"A possible character was found at pixel 50x18, with pixel dimensions 14x15"
 
-The [k-NN algorithm], used in this project, is one of the simplest  
-classification algorithm.
+#### Step 3: [Classification][] via [Supervised Learning][]
 
-#### Grounding
+"Teaches" the software which chunks of the image correspond to which characters.
 
-Creating a example image with already classified characters, for 
-training purposes.
-See [ground truth][].
+This project does this with [k-nearest neighbor]. One of the simplest classification algorithms.
 
-[classification problem]: https://en.wikipedia.org/wiki/Statistical_classification
-[Supervised learning]: https://en.wikipedia.org/wiki/Supervised_learning
-[k-NN algorithm]: https://en.wikipedia.org/wiki/K-nearest_neighbors_classification
-[ground truth]: https://en.wikipedia.org/wiki/Ground_truth
+#### Step 4: Grounding
+
+Creates a ".box" file which defines which characters are where and what size they are within a particular image.
+
+#### Step 5: Training
+
+Teaches the software "if you see more segments that look like this, this is what they mean"
+
+#### Step 6: Classification
+
+Compares a new image to the trained examples of similar images in order to try to figure out what text is in the image.
 
 How to understand this project
 ==============================
@@ -54,8 +53,8 @@ email on my github profile.
 How to use
 ==========
 
-Please check `example.py` for basic usage with the existing pre-grounded images.
+1. Make grounding with `example_grounding.py`
+2. Do training and classification with `example.py`
+3. Make grounding for a CAPTCHA with `example_captcha_grounding.py`
 
-You can use your own images, by placing them on the `data` directory. 
-Grounding images interactively can be accomplished by using `grouding.UserGrounder`.
-For more details check `example_grounding.py`
+You can use your own images, by placing them on the `data` directory.
