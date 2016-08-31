@@ -6,11 +6,10 @@ http://stackoverflow.com/questions/9413216/simple-digit-recognition-ocr-in-openc
 How to use
 ==========
 
-1. Make grounding with `example_grounding.py`
-2. Do training and classification with `example.py`
-3. Make grounding for a CAPTCHA with `example_captcha_grounding.py`
-
-You can use your own images, by placing them on the `data` directory.
+1. Make grounding. Example: `example_grounding.py`
+2. Do training and classification. Example: `example.py`
+3. Make grounding for a CAPTCHA: `example_captcha_grounding.py`
+4. Try to get other image files grounded, trained, and classified.
 
 How it works
 ==================
