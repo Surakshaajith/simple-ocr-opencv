@@ -20,11 +20,11 @@ What the output for one character looks like:
 What it means:
 "A possible character was found at pixel 50x18, with pixel dimensions 14x15"
 
-#### Step 3: [Classification][] via [Supervised Learning][]
+#### Step 3: Classification via Supervised Learning
 
 "Teaches" the software which chunks of the image correspond to which characters.
 
-This project does this with [k-nearest neighbor]. One of the simplest classification algorithms.
+This project does this with k-nearest neighbor. One of the simplest classification algorithms.
 
 #### Step 4: Grounding
 
