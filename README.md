@@ -32,7 +32,7 @@ Teaches the software "if you see more box segments that look like these ones, th
 
 #### Step 5: Classification
 
-Uses the pixels-to-characters mappings defined in previous steps to classify what new characters are.
+Uses k-Nearest Neighbors algorithm to compare the training images to the content of new image in order to guess what characters appear to be in the new image.
 
 #### Step 6: Results
 
