@@ -26,15 +26,15 @@ Finds chunks of pixels that look like text characters. What it looks like: "50 1
 
 Creates a ".box" file which says which specifies which segments of the image correspond to which characters.
 
-#### Step 5: Training
+#### Step 4: Training
 
 Teaches the software "if you see more box segments that look like these ones, this is what they mean." It's important to make sure you're training in data that's accurately respresentative of what content you'll be looking for.
 
-#### Step 6: Classification
+#### Step 5: Classification
 
 Uses the pixels-to-characters mappings defined in previous steps to classify what new characters are.
 
-#### Step 7: Results
+#### Step 6: Results
 
 If it worked well, you've got an accurate output that says what text appears to be in the image.
 
