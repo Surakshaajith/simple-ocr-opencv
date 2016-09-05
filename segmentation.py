@@ -65,10 +65,7 @@ class RawContourSegmenter( RawSegmenter ):
 
 class ContourSegmenter( FullSegmenter ):
     def __init__(self, **args):
-        if ('filters' in args):
-            filters = args['filters']
-        else:
-            filters= create_default_filter_stack()
+    	filters = args.get('filters', create_default_filter_stack())
         stack = [BlurProcessor(), RawContourSegmenter()] + filters + [SegmentOrderer()]
         FullSegmenter.__init__(self, stack, **args)
         stack[0].add_prehook( create_broadcast( "_input", filters, "image" ) )
